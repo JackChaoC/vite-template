@@ -31,7 +31,7 @@ export default defineConfig({
         preprocessorOptions: {
           // 全局样式引入
           scss: {
-            additionalData: '@use "@/css/default.scss" as *;',
+            additionalData: '@use "@/assets/css/default.scss" as *;',
             api: 'modern-compiler'
           }
         }

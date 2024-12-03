@@ -1,0 +1,50 @@
+:root {
+    --aside-width: 16rem;
+}
+
+$color-primary: #0DCAF0;
+
+$font-size-1: 0.8rem;
+$font-size-2: 1rem;
+$font-size-3: 1.5em;
+
+$font-weight-regular: 400;
+$font-weight-thick: 600;
+
+$text-color-gray-light: #a4a4a4;
+$text-color-gray: #515151;
+$text-color-whilte: #ffffff;
+
+$padding-regular: .6rem;
+$padding: 1rem;
+$padding-large: 1.4rem;
+$margin-regular: .6rem;
+$margin: 1rem;
+$margin-large: 1.4rem;
+
+$color-background: #F8F8F8;
+$color-content: #ffffff;
+
+
+
+$shadow: var(--el-box-shadow-light);
+
+//个别组件
+
+
+
+.full-both {
+    height: 100%;
+    width: 100%;
+}
+
+.shadow {
+    box-shadow: $shadow;
+}
+
+.box {
+    background-color: $color-content;
+    border-radius: .4rem;
+    box-shadow: $shadow;
+}
+
