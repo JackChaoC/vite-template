@@ -1,5 +1,5 @@
 <template>
-    <div class="login full-both">
+    <div class="login">
         <div class="main">
             <p>vite-management</p>
             <el-input class="account" v-model="data.user.username" style="width: 240px" type="account"
@@ -63,7 +63,8 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     align-items: center;
-
+    width: 100%;
+    height: 100vh;
     .main {
         width: 400px;
         height: auto;

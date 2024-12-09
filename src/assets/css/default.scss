@@ -1,19 +1,21 @@
 :root {
     --aside-width: 16rem;
+    --aside-width-simplify: 5.4375rem;
+    --header-sub: 16rem;
 }
 
-$color-primary: #0DCAF0;
+$transition: all 0.25s ease-out;
+$transition-background-color: background-color 0.25s ease-out;
+$color-primary: #23d697;
+$color-primary-linear: linear-gradient(118deg, $color-primary, #24cad6);
 
 $font-size-1: 0.8rem;
 $font-size-2: 1rem;
-$font-size-3: 1.5em;
+$font-size-3: 1.4em;
 
 $font-weight-regular: 400;
 $font-weight-thick: 600;
 
-$text-color-gray-light: #a4a4a4;
-$text-color-gray: #515151;
-$text-color-whilte: #ffffff;
 
 $padding-regular: .6rem;
 $padding: 1rem;
@@ -22,12 +24,39 @@ $margin-regular: .6rem;
 $margin: 1rem;
 $margin-large: 1.4rem;
 
-$color-background: #F8F8F8;
-$color-content: #ffffff;
+
+[data-theme=light] * {
+    --color-text-light: #a4a4a4;
+    --color-text: #515151;
+    --color-background: #F8F8F8;
+    --color-content: #ffffff;
 
 
+}
 
-$shadow: var(--el-box-shadow-light);
+[data-theme=dark] * {
+    --color-text-light: #DEE2E6;
+    --color-text: #FFFFFF;
+    --color-background: #2e353d;
+    --color-content: #414c58;
+}
+
+$color-text-white: #fff;
+$color-text-light: var(--color-text-light);
+$color-text: var(--color-text);
+
+$color-background: var(--color-background);
+$color-content: var(--color-content);
+
+@mixin shadow-primary($opacity) {
+    box-shadow: 0 0 10px 1px rgb(#20D293, $opacity);
+    // 样式代码
+}
+
+
+$shadow:   0 0 15px 5px #3939390c;
+$shadow-dark: 0 0 15px 5px #39393918;
+
 
 //个别组件
 
@@ -48,3 +77,13 @@ $shadow: var(--el-box-shadow-light);
     box-shadow: $shadow;
 }
 
+.btn {
+    cursor: pointer;
+    border: 0;
+    line-height: 2em;
+    border-radius: 2em;
+    padding: 0 1em;
+    background: $color-primary-linear;
+    color: $color-text-white;
+    box-shadow: $shadow-dark;
+}
