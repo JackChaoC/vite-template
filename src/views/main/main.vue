@@ -37,7 +37,15 @@
                     <p class="username">JackChaoC</p>
                     <p class="e-mail">51727388414@qq.com</p>
                 </div>
-                <img src="@/assets/image/planet.png" class="profile">
+                <el-dropdown trigger="click" @command="dropdownHandler">
+                    <img src="@/assets/image/planet.png" class="profile">
+                    <template #dropdown>
+                        <el-dropdown-menu>
+                            <el-dropdown-item v-for="item in dropDownItem" :command="item.id" :icon="item.icon">{{
+                                item.label }}</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </template>
+                </el-dropdown>
             </div>
 
         </div>
@@ -62,7 +70,7 @@ import $request from '@/http/request'
 import { onMounted, ref, watch, inject, nextTick } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
-import { draggable } from 'element-plus/es/components/color-picker/src/utils/draggable.mjs';
+import { SwitchButton } from '@element-plus/icons-vue'
 
 const router = useRouter();
 const route = useRoute();
@@ -136,29 +144,34 @@ const directory = ref([
     },
 ]);
 
+const dropDownItem = [
+    {
+        label: 'Action 1',
+        icon: null,
+        id: 'a1'
+    },
+    {
+        label: 'Action 2',
+        icon: null,
+        id: 'a2'
 
-//listen $size
-const $size = inject('$size')
+    },
+    {
+        label: '推出登录',
+        icon: SwitchButton,
+        id: 'logout'
+    },
+]
+
 const el_main = ref(null)
 const el_navbar = ref(null)
 const root = document.documentElement;
 const root_asideWidth = getComputedStyle(root).getPropertyValue('--aside-width');
 
+//listen $size
+const $size = inject('$size')
 const setRootProperty_header = (value) => {
     root.style.setProperty('--header-sub', value);
-}
-
-//aside-check
-let ischecked = ref(true)
-const asideChcek = () => {
-    el_main.value.classList.toggle('simplifyaside')
-    ischecked.value = !ischecked.value
-}
-//aside-show/hide
-const asideToggle = () => {
-    if ($size.value < 5) {
-        el_main.value.classList.toggle('showaside')
-    }
 }
 watch($size, (newVal, oldVal) => {
     console.log(111);
@@ -180,6 +193,21 @@ watch($size, (newVal, oldVal) => {
 
 })
 
+
+//aside-simplify
+let ischecked = ref(true)
+const asideChcek = () => {
+    el_main.value.classList.toggle('simplifyaside')
+    ischecked.value = !ischecked.value
+}
+//aside-show/hide
+const asideToggle = () => {
+    if ($size.value < 5) {
+        el_main.value.classList.toggle('showaside')
+    }
+}
+//navigation
+const activeRoute = ref('')
 const naviTo = (name) => {
     router.push({
         name: name,
@@ -187,8 +215,11 @@ const naviTo = (name) => {
     activeRoute.value = name
 }
 
-
-const activeRoute = ref('')
+//dropdown
+const dropdownHandler = (id) => {
+    console.log(id);
+    
+}   
 
 //theme
 const themeToggle = () => {
@@ -243,13 +274,12 @@ $aside-width-simplify: var(--aside-width-simplify);
 }
 
 .main {
-    background-color: $color-background;
     display: flex;
-    scrollbar-width: thin;
-
+    background-color: var(--theme-color-background);
+    transition: $transition-background-color;
 
     .aside {
-        background-color: $color-content;
+        background-color: var(--theme-color-content);
         position: fixed;
         box-shadow: $shadow;
         padding: $padding;
@@ -328,7 +358,7 @@ $aside-width-simplify: var(--aside-width-simplify);
     align-items: center;
     font-size: $font-size-2;
     font-weight: $font-weight-regular;
-    color: $color-text;
+    color: var(theme-color-text-gray);
     line-height: 2em;
     padding: .3rem 1rem;
     margin: .2rem 0;
@@ -343,6 +373,7 @@ $aside-width-simplify: var(--aside-width-simplify);
     }
 
     span {
+        color: var(--theme-color-text);
         margin-left: 10px;
         display: inline-block;
     }
@@ -353,7 +384,7 @@ $aside-width-simplify: var(--aside-width-simplify);
 .node {
     p {
         padding: 8px $padding-regular;
-        color: $color-text-light;
+        color: var(theme-color-text);
         font-size: $font-size-1;
     }
 }
@@ -394,17 +425,19 @@ $aside-width-simplify: var(--aside-width-simplify);
 
         .username {
             font-size: $font-size-1;
-            color: $color-text;
+            color: var(theme-color-text-gray);
+            font-weight: 600;
         }
 
         .e-mail {
             font-size: $font-size-1;
-            color: $color-text-light;
+            color: var(theme-color-text);
         }
 
         .profile {
             margin-left: .5rem;
             width: 2.8rem;
+            margin-right: .5rem;
         }
     }
 }
@@ -415,7 +448,7 @@ $aside-width-simplify: var(--aside-width-simplify);
     width: calc(100% - var(--header-sub));
     height: 5rem;
     z-index: 997;
-    background-color: $color-background;
+    background-color: var(--theme-color-background);
     opacity: .9;
     transition: $transition-background-color;
 
@@ -429,7 +462,6 @@ $aside-width-simplify: var(--aside-width-simplify);
 .content {
     padding: 2rem 2.2rem 0;
     box-sizing: border-box;
-    background-color: $color-background;
     transition: $transition;
     flex: 1;
     margin-top: 5rem;
@@ -501,7 +533,7 @@ $aside-width-simplify: var(--aside-width-simplify);
     border-radius: 4px;
 
     span {
-        color: $color-text-white;
+        color: #fff;
     }
 }
 </style>

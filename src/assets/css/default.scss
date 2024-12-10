@@ -1,12 +1,48 @@
 :root {
+    --color-primary: #23d697;
     --aside-width: 16rem;
     --aside-width-simplify: 5.4375rem;
     --header-sub: 16rem;
+    --text-color-light: #DEE2E6;
+    --text-color: #a4a4a4;
+    --text-color-dark: #515151;
+    --background-color-light: #F8F8F8;
+    --background-color-dark: #2e353d;
+    --content-color-dark: #414c58;
+
+    //overwrite element-plus style
+    --el-color-primary: #fff !important;
+    --el-color-primary-light-9: var(--color-primary) !important;
+    --el-border-color-light: none !important;
 }
 
+[data-theme=light] * {
+    --theme-color-text: var(--text-color-dark);
+    --theme-color-text-gray: var(--text-color);
+    --theme-color-background: var(--background-color-light);
+    --theme-color-content: #fff;
+
+    //overwrite element-plus style
+    --el-bg-color-overlay: var(--background-color-light);
+
+}
+
+[data-theme=dark] * {
+    --theme-color-text: #fff;
+    --theme-color-text-gray: var(--text-color-light);
+    --theme-color-background: var(--background-color-dark);
+    --theme-color-content: var(--content-color-dark);
+    //overwrite element-plus style
+
+    --el-bg-color-overlay: var(--content-color-dark);
+    --el-text-color-regular: var(--theme-color-text);
+    --el-color-primary: var(--text-color-gray-dark) !important;
+
+}
+
+$color-primary: var(--color-primary);
 $transition: all 0.25s ease-out;
 $transition-background-color: background-color 0.25s ease-out;
-$color-primary: #23d697;
 $color-primary-linear: linear-gradient(118deg, $color-primary, #24cad6);
 
 $font-size-1: 0.8rem;
@@ -25,28 +61,14 @@ $margin: 1rem;
 $margin-large: 1.4rem;
 
 
-[data-theme=light] * {
-    --color-text-light: #a4a4a4;
-    --color-text: #515151;
-    --color-background: #F8F8F8;
-    --color-content: #ffffff;
 
 
-}
 
-[data-theme=dark] * {
-    --color-text-light: #DEE2E6;
-    --color-text: #FFFFFF;
-    --color-background: #2e353d;
-    --color-content: #414c58;
-}
+$color-text: var(--theme-color-text);
+$color-text-gray: var(--theme-color-text-gray);
 
-$color-text-white: #fff;
-$color-text-light: var(--color-text-light);
-$color-text: var(--color-text);
-
-$color-background: var(--color-background);
-$color-content: var(--color-content);
+$theme-color-background: var(--theme-color-background);
+$color-content: var(--theme-color-content);
 
 @mixin shadow-primary($opacity) {
     box-shadow: 0 0 10px 1px rgb(#20D293, $opacity);
@@ -54,7 +76,7 @@ $color-content: var(--color-content);
 }
 
 
-$shadow:   0 0 15px 5px #3939390c;
+$shadow: 0 0 15px 5px #3939390c;
 $shadow-dark: 0 0 15px 5px #39393918;
 
 
@@ -78,12 +100,15 @@ $shadow-dark: 0 0 15px 5px #39393918;
 }
 
 .btn {
+    font-size: 1rem;
     cursor: pointer;
     border: 0;
     line-height: 2em;
     border-radius: 2em;
-    padding: 0 1em;
+    padding: .2em 1em;
     background: $color-primary-linear;
-    color: $color-text-white;
+    color: #fff;
     box-shadow: $shadow-dark;
 }
+
+//override element-css

@@ -11,7 +11,7 @@ onMounted(() => {
     window.addEventListener('resize', () => {
         calWindowWidth()
     })
-    
+
 
 })
 var calWindowWidth = () => {
@@ -27,7 +27,7 @@ var calWindowWidth = () => {
     } else {
         $size.value = 5; // Extra Large
     }
-    console.log('$size:',$size.value);
+    console.log('$size:', $size.value);
 }
 </script>
 
@@ -37,15 +37,26 @@ var calWindowWidth = () => {
     margin: 0;
 }
 
-html,
-body {
-    width: 100%;
-    height: 100%;
-    overflow: none;
-    scrollbar-width: thin;
+html {
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 2em;
+        background-color: #dad6d6;
+    }
+
+    &::-webkit-scrollbar-track {
+        border-radius: 2em;
+        background-color: transparent;
+    }
 }
 
-#app {
-    width: 100%;
+body {
+    background-color: var(theme-color-background);
 }
+
+#app {}
 </style>

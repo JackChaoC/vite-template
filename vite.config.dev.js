@@ -1,10 +1,20 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path';
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [
+        vue(),
+        AutoImport({
+            resolvers: [ElementPlusResolver()],
+        }),
+        Components({
+            resolvers: [ElementPlusResolver()],
+        }),],
     server: {
         hmr: {
             // 自定义 HMR 选项，例如：
@@ -29,11 +39,13 @@ export default defineConfig({
     },
     css: {
         preprocessorOptions: {
-          // 全局样式引入
-          scss: {
-            additionalData: '@use "@/assets/css/default.scss" as *;',
-            api: 'modern-compiler'
-          }
+            // 全局样式引入
+            scss: {
+                additionalData: `
+                    @use "@/assets/css/default.scss" as *;
+                `,
+                api: 'modern-compiler'
+            }
         }
-      }
+    }
 })
