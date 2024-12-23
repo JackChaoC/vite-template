@@ -48,19 +48,16 @@ service.interceptors.response.use(response => {
         console.log('跳过登录验证');
         return response.data
     }
-    if (response.data.code == 1) {
-        ElMessage.warning('请登录')
+    if (response.data.code == 0) {
+        ElMessage.warning(`${response.data.message}`)
         router.push({
             name: 'login'
         })
-        return Promise.reject('需登录')
+        return Promise.reject('已访问到服务器，但是拒绝请求')
     }
     return response.data
 }, error => {
-    /***** 接收到异常响应的处理开始 *****/
     if (error && error.response) {
-        // 1.公共错误处理
-        // 2.根据响应码具体处理
         switch (error.response.status) {
             case 400:
                 error.message = '错误请求'
@@ -112,9 +109,6 @@ service.interceptors.response.use(response => {
     }
 
     ElMessage.error(error.message)
-    /***** 处理结束 *****/
-    //如果不需要错误处理，以上的处理过程都可省略
     Promise.reject(error)
 })
-//4.导入文件
 export default service

@@ -1,5 +1,5 @@
 <template>
-    <div class="main full-both" ref="el_main">
+    <div class="main full-both" :class="[$size < 2 ? 'size1' : '']" ref="el_main">
 
         <!-- fixed -->
         <div class="aside">
@@ -10,8 +10,11 @@
                 <el-col class="title-right" :span="18">
                     <span>逐日</span>
                     <img class="icon-aside-check" v-show="$size > 4"
-                        :src="ischecked ? checkIconUrl.checked : checkIconUrl.unchecked" @click="asideChcek()">
-                    <img class="icon-close" v-show="$size < 5" src="@/assets/icon/close.png" @click="asideToggle()">
+                        :src="ischecked ? ($theme == 'dark' ? checkIconUrl.checkedDark : checkIconUrl.checked) : ($theme == 'dark' ? checkIconUrl.uncheckedDark : checkIconUrl.unchecked)"
+                        @click="asideChcek()">
+                    <img class="icon-close" v-show="$size < 5"
+                        :src="$theme == 'dark' ? themeIconUrl.close.dark : themeIconUrl.close.light"
+                        @click="asideToggle()">
                 </el-col>
             </el-row>
 
@@ -20,7 +23,8 @@
                 <div class="aside-item" v-for="item_s in item_f.children"
                     :class="[item_s.routeName == activeRoute ? 'aside-item-checked' : '']"
                     @click="naviTo(item_s.routeName)">
-                    <img :src="item_s.routeName == activeRoute ? item_s.imgSelected : item_s.img" draggable="false">
+                    <img :src="item_s.routeName == activeRoute || $theme == 'dark' ? item_s.imgSelected : item_s.img"
+                        draggable="false">
                     <span>{{ item_s.name }}</span>
 
                 </div>
@@ -30,7 +34,8 @@
         <div class="navbar box" ref="el_navbar">
             <div class="navbar-left">
 
-                <img v-show="$size < 5" src="@/assets/icon/menu.png" class="icon-menu" @click="asideToggle()">
+                <img v-show="$size < 5" :src="$theme == 'dark' ?
+                    themeIconUrl.menu.dark : themeIconUrl.menu.light" class="icon-menu" @click="asideToggle()">
             </div>
             <div class="navbar-right">
                 <div v-show="$size > 1">
@@ -41,8 +46,9 @@
                     <img src="@/assets/image/planet.png" class="profile">
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item v-for="item in dropDownItem" :command="item.id" :icon="item.icon">{{
-                                item.label }}</el-dropdown-item>
+                            <el-dropdown-item v-for="(item, index) in dropDownItem" :command="item.id" :icon="item.icon"
+                                :divided="index == dropDownItem.length - 1 ? true : false">{{
+                                    item.label }}</el-dropdown-item>
                         </el-dropdown-menu>
                     </template>
                 </el-dropdown>
@@ -61,8 +67,6 @@
             <router-view></router-view>
         </div>
     </div>
-    <button class="box btn" style="position: fixed; bottom: 60px;right: 100px;" @click="themeToggle">toggle
-        theme</button>
 </template>
 
 <script setup>
@@ -83,39 +87,56 @@ const getList = () => {
         console.log('获取issue_lists失败！' + err);
     })
 }
-const getImgUrl = (url) => { return new URL(url, import.meta.url).href }
+
+function getImgUrl(imageName) {
+    return new URL(`../../assets/icon/${imageName}`, import.meta.url).href
+}
 const checkIconUrl = ref({
-    checked: getImgUrl('/src/assets/icon/checked.png'),
-    unchecked: getImgUrl('/src/assets/icon/unchecked.png'),
+    checked: getImgUrl('checked.png'),
+    checkedDark: getImgUrl('checked-dark.png'),
+    unchecked: getImgUrl('unchecked.png'),
+    uncheckedDark: getImgUrl('unchecked-dark.png'),
 })
+const themeIconUrl = ref({
+    close: {
+        light: getImgUrl('close.png'),
+        dark: getImgUrl('close-dark.png'),
+    },
+    menu: {
+        light: getImgUrl('menu.png'),
+        dark: getImgUrl('menu-dark.png')
+    }
+})
+
 const directory = ref([
     {
         children: [
             {
-                img: getImgUrl('/src/assets/icon/home.png'),
-                imgSelected: getImgUrl('/src/assets/icon/home-selected.png'),
+                img: getImgUrl('home.png'),
+                imgSelected: getImgUrl('home-selected.png'),
                 routeName: 'home',
                 name: '首页'
             },
             {
-                img: getImgUrl('/src/assets/icon/store.png'),
-                imgSelected: getImgUrl('/src/assets/icon/store-selected.png'),
+                img: getImgUrl('store.png'),
+                imgSelected: getImgUrl('store-selected.png'),
                 routeName: 'store',
                 name: '商店'
             },
         ]
-    }, {
+    },
+    {
         node: '节点1',
         children: [
             {
-                img: getImgUrl('/src/assets/icon/account.png'),
-                imgSelected: getImgUrl('/src/assets/icon/account-selected.png'),
+                img: getImgUrl('account.png'),
+                imgSelected: getImgUrl('account-selected.png'),
                 routeName: 'account',
                 name: '我的账号'
             },
             {
-                img: getImgUrl('/src/assets/icon/wallet.png'),
-                imgSelected: getImgUrl('/src/assets/icon/wallet-selected.png'),
+                img: getImgUrl('wallet.png'),
+                imgSelected: getImgUrl('wallet-selected.png'),
                 routeName: '钱包',
                 name: 'wallet'
             },
@@ -125,14 +146,14 @@ const directory = ref([
         node: '节点2',
         children: [
             {
-                img: getImgUrl('/src/assets/icon/tutorial.png'),
-                imgSelected: getImgUrl('/src/assets/icon/tutorial-selected.png'),
+                img: getImgUrl('tutorial.png'),
+                imgSelected: getImgUrl('tutorial-selected.png'),
                 routeName: 'tutorial',
                 name: '教程'
             },
             {
-                img: getImgUrl('/src/assets/icon/problem.png'),
-                imgSelected: getImgUrl('/src/assets/icon/problem-selected.png'),
+                img: getImgUrl('problem.png'),
+                imgSelected: getImgUrl('problem-selected.png'),
                 routeName: 'problem',
                 name: '常见问题'
             },
@@ -154,10 +175,9 @@ const dropDownItem = [
         label: 'Action 2',
         icon: null,
         id: 'a2'
-
     },
     {
-        label: '推出登录',
+        label: '退出登录',
         icon: SwitchButton,
         id: 'logout'
     },
@@ -168,14 +188,13 @@ const el_navbar = ref(null)
 const root = document.documentElement;
 const root_asideWidth = getComputedStyle(root).getPropertyValue('--aside-width');
 
+const $theme = inject('$theme')
 //listen $size
 const $size = inject('$size')
 const setRootProperty_header = (value) => {
     root.style.setProperty('--header-sub', value);
 }
 watch($size, (newVal, oldVal) => {
-    console.log(111);
-
     if (newVal > 4) {
         console.log('变大');
 
@@ -218,26 +237,19 @@ const naviTo = (name) => {
 //dropdown
 const dropdownHandler = (id) => {
     console.log(id);
-    
-}   
-
-//theme
-const themeToggle = () => {
-
-    const currentTheme = root.getAttribute('data-theme');
-    console.log(111, currentTheme);
-    if (!currentTheme || currentTheme == 'dark') {
-        console.log(222);
-
-        root.setAttribute('data-theme', 'light')
-    } else if (currentTheme == 'light') {
-        root.setAttribute('data-theme', 'dark')
+    if (id == 'logout') {
+        router.push({
+            name: 'login',
+        })
+        ElMessage({
+            message: '退出成功',
+            type: 'success',
+        })
     }
 }
 
-onMounted(() => {
-    root.setAttribute('data-theme', 'light')
 
+onMounted(() => {
     if ($size.value < 5) {
         setRootProperty_header('0rem')
     }
@@ -275,21 +287,26 @@ $aside-width-simplify: var(--aside-width-simplify);
 
 .main {
     display: flex;
-    background-color: var(--theme-color-background);
-    transition: $transition-background-color;
+
 
     .aside {
+        user-select: none;
         background-color: var(--theme-color-content);
         position: fixed;
         box-shadow: $shadow;
         padding: $padding;
         padding-top: 0;
         box-sizing: border-box;
-        height: inherit;
+        height: 100vh;
         width: $aside-width;
         z-index: 999;
         transition: $transition;
-        overflow: hidden;
+        overflow-y: scroll;
+        overflow-x: hidden;
+
+        &::-webkit-scrollbar {
+            width: 0px;
+        }
 
         .title {
             padding: .6rem 0;
@@ -309,11 +326,7 @@ $aside-width-simplify: var(--aside-width-simplify);
 
             .title-right {
                 line-height: 2em;
-                /* 渐变色 */
-                background: $color-primary-linear;
-                /* 背景裁剪为文字 */
-                background-clip: text;
-                -webkit-text-fill-color: transparent;
+                @include text-color-linear;
                 font-size: $font-size-3;
                 font-weight: $font-weight-thick;
                 display: flex;
@@ -348,7 +361,7 @@ $aside-width-simplify: var(--aside-width-simplify);
     transition: transform 0.25s ease-in-out;
 
     &:hover img {
-        padding-left: 30px;
+        padding-left: 10px;
     }
 
 
@@ -384,7 +397,7 @@ $aside-width-simplify: var(--aside-width-simplify);
 .node {
     p {
         padding: 8px $padding-regular;
-        color: var(theme-color-text);
+        color: var(--theme-color-text-gray);
         font-size: $font-size-1;
     }
 }
@@ -425,13 +438,13 @@ $aside-width-simplify: var(--aside-width-simplify);
 
         .username {
             font-size: $font-size-1;
-            color: var(theme-color-text-gray);
+            color: var(--theme-color-text);
             font-weight: 600;
         }
 
         .e-mail {
             font-size: $font-size-1;
-            color: var(theme-color-text);
+            color: var(--theme-color-text-gray);
         }
 
         .profile {
@@ -470,7 +483,7 @@ $aside-width-simplify: var(--aside-width-simplify);
 }
 
 
-
+// dynamic
 
 .showaside {
 
@@ -534,6 +547,18 @@ $aside-width-simplify: var(--aside-width-simplify);
 
     span {
         color: #fff;
+    }
+}
+
+.size1 {
+    .content {
+        padding: 1.2rem 1.2rem 0;
+    }
+
+    .navbar {
+        margin-left: 1.2rem;
+        margin-right: 1.2rem;
+        width: calc(100% - var(--header-sub) - 2.4rem);
     }
 }
 </style>

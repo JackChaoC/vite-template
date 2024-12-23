@@ -6,7 +6,7 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
-    base: '/todolist',//nginx静态资源访问路径，与AJAX请求路径不同！
+    base: '/vite-template-swal',//nginx静态资源访问路径，与AJAX请求路径不同！
     plugins: [
         vue(),
         AutoImport({
@@ -17,7 +17,7 @@ export default defineConfig({
         }), 
     ],
     build: {
-        outDir: 'vite-template-jubuyinru', // 修改为你想要的目录名
+        outDir: 'vite-template-swal', // 修改为你想要的目录名
     },
     resolve: {
         alias: {
