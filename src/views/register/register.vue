@@ -27,15 +27,17 @@
     <el-dialog class="terms" v-model="dialogTableVisible" width="24rem">
         <div class="container">
             <h1>服务条款</h1>
-            <p>本网站提供的内容仅供参考和一般信息使用，未经明确说明，不构成法律、财务、医疗或其他专业建议。我们尽最大努力确保信息的准确性和完整性，但无法保证内容在所有时间内的无误性、完整性或适用性。
+            <div class="article">
+                <p>本网站提供的内容仅供参考和一般信息使用，未经明确说明，不构成法律、财务、医疗或其他专业建议。我们尽最大努力确保信息的准确性和完整性，但无法保证内容在所有时间内的无误性、完整性或适用性。
 
-                用户在访问本网站或使用相关服务时，需自行承担可能的风险。本网站对因使用或依赖本网站内容而导致的任何直接或间接损失概不负责。
+                    用户在访问本网站或使用相关服务时，需自行承担可能的风险。本网站对因使用或依赖本网站内容而导致的任何直接或间接损失概不负责。
 
-                此外，您可能会通过本网站链接到其他第三方网站。这些链接仅为用户方便提供，我们对第三方网站的内容、准确性、隐私政策或其他任何事项不承担任何责任。
+                    此外，您可能会通过本网站链接到其他第三方网站。这些链接仅为用户方便提供，我们对第三方网站的内容、准确性、隐私政策或其他任何事项不承担任何责任。
 
-                在法律允许的最大范围内，本网站对任何类型的损害（包括但不限于数据丢失、业务中断或其他经济损失）不承担责任，无论其是由于合同、侵权行为还是其他原因造成的。
+                    在法律允许的最大范围内，本网站对任何类型的损害（包括但不限于数据丢失、业务中断或其他经济损失）不承担责任，无论其是由于合同、侵权行为还是其他原因造成的。
 
-                通过使用本网站，您即表示同意本免责声明的内容。如您对本免责声明的任何部分有疑问或异议，请立即停止使用本网站。</p>
+                    通过使用本网站，您即表示同意本免责声明的内容。如您对本免责声明的任何部分有疑问或异议，请立即停止使用本网站。</p>
+            </div>
             <button class="btn" @click="approve">同 意</button>
         </div>
     </el-dialog>
@@ -45,9 +47,9 @@
 import { ref, reactive, onMounted } from 'vue';
 import request from '@/http/request.js';
 import { useRouter } from 'vue-router';
+import { validateEmail } from '@/tools/validate.js'
 
 const router = useRouter();
-const message = ref('Hello, Vue 3!');
 const data = reactive({
     user: {
         name: '',
@@ -77,14 +79,10 @@ const postLogin = async () => {
             user_password: data.user.password
         });
         console.log(res);
-        if (res.code == 200) {
-            router.push({
-                name: 'login'
-            });
-            ElMessage.success('注册成功')
-        } else if (res.code == 0) {
-            ElMessage.warning(`${res.message}`)
-        }
+        router.push({
+            name: 'login'
+        });
+        ElMessage.success('注册成功')
     } catch (err) {
         console.log(err);
     }
@@ -96,6 +94,9 @@ const validator = () => {
     }
     if (!data.user.email) {
         ElMessage.error('邮箱不能为空')
+        return false;
+    } else if (!validateEmail(data.user.email)) {
+        ElMessage.error('邮箱格式不正确')
         return false;
     }
     if (!data.user.password) {
@@ -116,10 +117,6 @@ const validator = () => {
     }
     return true;
 }
-onMounted(() => {
-
-    console.log(document.cookie);
-})
 
 </script>
 
@@ -230,27 +227,42 @@ onMounted(() => {
 }
 
 .terms {
-    .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
+    .container {
         display: flex;
         flex-direction: column;
         align-items: center;
+
 
         h1 {
             font-size: $font-size-3;
             margin-bottom: 1rem;
         }
 
-        p {
-            line-height: 1.5em;
-            font-size: $font-size-2;
-            text-indent: 2em;
+        .article {
+            height: 400px;
+            overflow-y: scroll;
             margin-bottom: 1rem;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+
+            p {
+                line-height: 2em;
+                font-size: $font-size-2;
+                text-indent: 2em;
+            }
         }
+
 
         .btn {
             width: 6rem;
         }
     }
+
 }
 </style>

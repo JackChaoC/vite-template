@@ -1,39 +1,24 @@
-/****   request.js   ****/
-// 导入axios
 import axios from 'axios'
-// 使用element-ui Message做消息提醒
 import { ElMessage } from 'element-plus';
 import router from '@/router/index.js';
-// 示例的 getCookie 函数
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-//1. 创建新的axios实例，
 const service = axios.create({
-    // 公共接口--这里注意后面会讲
     baseURL: import.meta.env.VITE_BASE_URL,
-    // 超时时间 单位是ms，这里设置了3s的超时时间
     timeout: 3 * 1000,
     // axios不需要配置请求头，自动检测json/multipart，加了之后接口中的请求头设置无效
-    // headers: {
-    //   'Content-Type': 'application/json',
-    // },
 })
 // 2.请求拦截器
 service.interceptors.request.use(config => {
-    console.log('config', config);
-
-    //发请求前做的一些处理，数据转化，配置请求头，设置token,设置loading等，根据需求去添加
-    // config.data = JSON.stringify(config.data); 
-
-    //注意使用token的时候需要引入cookie方法或者用本地localStorage等方法，推荐js-cookie
-    const token = getCookie('名称');//这里取token之前，你肯定需要先拿到token,存一下
+    // console.log('响应拦截器config->', config);
+    const token = getCookie('名称');
     if (token) {
-        config.params = { 'token': token } //如果要求携带在参数中
-        config.headers.token = token; //如果要求携带在请求头中
+        config.params = { 'token': token }
+        config.headers.token = token;
     }
 
     return config
@@ -43,72 +28,90 @@ service.interceptors.request.use(config => {
 
 // 3.响应拦截器
 service.interceptors.response.use(response => {
-    console.log('响应拦截器->', response);
-    if (response.config.url.split('/')[1] == 'authorization') {
+    // console.log('响应拦截器response->', response);
+
+    const { url } = response.config;
+    const { code, message, data } = response.data;
+    let errMsg = '';
+
+    if (url.split('/')[1] == 'authorization') {
         console.log('跳过登录验证');
-        return response.data
+        return data
     }
-    if (response.data.code == 0) {
-        ElMessage.warning(`${response.data.message}`)
-        router.push({
-            name: 'login'
-        })
-        return Promise.reject('已访问到服务器，但是拒绝请求')
+
+    if (code == null) {
+        errMsg = 'no code'
+    } else {
+        switch (code) {
+            case 200:
+                return data
+            case 0:
+                errMsg = message || '已访问到服务器，但是操作失败'
+                break;
+            case 20001:
+                router.push({
+                    name: 'login'
+                })
+                errMsg = '访问成功但是未登录处理'
+                break;
+            default:
+                errMsg = data.message || '未知错误'
+        }
     }
-    return response.data
+
+    if (errMsg) {
+        ElMessage.warning(errMsg)
+        return Promise.reject(new Error(errMsg));
+    }
+
 }, error => {
     if (error && error.response) {
         switch (error.response.status) {
             case 400:
-                error.message = '错误请求'
+                error.message = '400 错误请求'
                 break;
             case 401:
-                error.message = '未授权，请重新登录'
+                error.message = '401 未授权，请重新登录'
                 break;
             case 403:
-                error.message = '拒绝访问'
+                error.message = '403 拒绝访问'
                 break;
             case 404:
-                error.message = '请求错误,未找到该资源'
-                window.location.href = "/NotFound"
+                error.message = '404 请求错误,未找到该资源'
+                // window.location.href = "/NotFound"
                 break;
             case 405:
-                error.message = '请求方法未允许'
+                error.message = '405 请求方法未允许'
                 break;
             case 408:
-                error.message = '请求超时'
+                error.message = '408 请求超时'
                 break;
             case 500:
-                error.message = '服务器端出错'
+                error.message = '500 服务器端出错'
                 break;
             case 501:
-                error.message = '网络未实现'
+                error.message = '501 网络未实现'
                 break;
             case 502:
-                error.message = '网络错误'
+                error.message = '502 网络错误'
                 break;
             case 503:
-                error.message = '服务不可用'
+                error.message = '503 服务不可用'
                 break;
             case 504:
-                error.message = '网络超时'
+                error.message = '504 网络超时'
                 break;
             case 505:
-                error.message = 'http版本不支持该请求'
+                error.message = '505 http版本不支持该请求'
                 break;
             default:
                 error.message = `连接错误${error.response.status}`
         }
-    } else {
-        // 超时处理
-        if (JSON.stringify(error).includes('timeout')) {
-            ElMessage.error('服务器响应超时，请刷新当前页')
-        }
-        error.message = '连接服务器失败'
+        ElMessage.error(error.message)
         console.log(error);
+        const { code, sql } = error.response.data
+        console.log(`code: ${code || ''}\nsql: ${sql || ''}`);
     }
-
-    ElMessage.error(error.message)
-    Promise.reject(error)
+    return Promise.reject(error)
 })
 export default service

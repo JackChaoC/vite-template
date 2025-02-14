@@ -24,7 +24,7 @@ export default defineConfig({
         proxy: {
             // 在此处编写代理规则
             '/api': {
-                target: 'http://localhost:3000/todolist',
+                target: 'http://localhost:3000',
                 changeOrigin: true,
                 rewrite: (path) => {
                     return path.replace(/\/api/, '')

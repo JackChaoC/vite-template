@@ -17,7 +17,6 @@
                         @click="asideToggle()">
                 </el-col>
             </el-row>
-
             <div class="node" v-for="item_f in directory">
                 <p v-if="item_f.node > ''">{{ item_f.node }}</p>
                 <div class="aside-item" v-for="item_s in item_f.children"
@@ -29,7 +28,11 @@
 
                 </div>
             </div>
+            <theme-switch class="theme-switch" v-model="isDark" @change="toggleTheme" :imgOn="themeIconUrl.switch.dark"
+                :imgOff="themeIconUrl.switch.light" btnColorOn="#3357eb" bgColorOff="#7b8cd6" bgColorOn="#3951b4"
+                sizeOn="16px" />
         </div>
+        <div v-show="isAsideMaskShow" class="aside-mask" @click="hideAsideMask"></div>
         <!-- fixed -->
         <div class="navbar box" ref="el_navbar">
             <div class="navbar-left">
@@ -39,11 +42,13 @@
             </div>
             <div class="navbar-right">
                 <div v-show="$size > 1">
-                    <p class="username">JackChaoC</p>
-                    <p class="e-mail">51727388414@qq.com</p>
+                    <p class="username">{{ userInfo.name }}</p>
+                    <p class="e-mail">{{ userInfo.email }}</p>
                 </div>
                 <el-dropdown trigger="click" @command="dropdownHandler">
-                    <img src="@/assets/image/planet.png" class="profile">
+                    <span class="avatar">
+                        <img :src="userInfo.avatar">
+                    </span>
                     <template #dropdown>
                         <el-dropdown-menu>
                             <el-dropdown-item v-for="(item, index) in dropDownItem" :command="item.id" :icon="item.icon"
@@ -55,7 +60,7 @@
             </div>
 
         </div>
-        <div class="mask">
+        <div class="navbar-mask">
         </div>
         <!-- flex,固定宽度 -->
 
@@ -63,21 +68,27 @@
         </div>
         <div class="content">
 
-            <!-- flex，flex=1 -->
-            <router-view></router-view>
+            <router-view v-slot="{ Component }">
+                <keep-alive>
+                    <component :is="Component" />
+                </keep-alive>
+            </router-view>
         </div>
     </div>
 </template>
 
 <script setup>
 import $request from '@/http/request'
-import { onMounted, ref, watch, inject, nextTick } from 'vue';
+import { onMounted, ref, watch, inject, nextTick, reactive } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import { SwitchButton } from '@element-plus/icons-vue'
+import ThemeSwitch from '@/components/ThemeSwitch.vue';
+import { getIconUrl, getImgUrl, getCookie } from '@/tools/utils.js'
 
 const router = useRouter();
 const route = useRoute();
+
 
 const message = ref('Hello, Vue 3!');
 const getList = () => {
@@ -88,23 +99,24 @@ const getList = () => {
     })
 }
 
-function getImgUrl(imageName) {
-    return new URL(`../../assets/icon/${imageName}`, import.meta.url).href
-}
 const checkIconUrl = ref({
-    checked: getImgUrl('checked.png'),
-    checkedDark: getImgUrl('checked-dark.png'),
-    unchecked: getImgUrl('unchecked.png'),
-    uncheckedDark: getImgUrl('unchecked-dark.png'),
+    checked: getIconUrl('checked.png'),
+    checkedDark: getIconUrl('checked-dark.png'),
+    unchecked: getIconUrl('unchecked.png'),
+    uncheckedDark: getIconUrl('unchecked-dark.png'),
 })
 const themeIconUrl = ref({
     close: {
-        light: getImgUrl('close.png'),
-        dark: getImgUrl('close-dark.png'),
+        light: getIconUrl('close.png'),
+        dark: getIconUrl('close-dark.png'),
     },
     menu: {
-        light: getImgUrl('menu.png'),
-        dark: getImgUrl('menu-dark.png')
+        light: getIconUrl('menu.png'),
+        dark: getIconUrl('menu-dark.png')
+    },
+    switch: {
+        light: getIconUrl('sun.png'),
+        dark: getIconUrl('moon.png'),
     }
 })
 
@@ -112,14 +124,14 @@ const directory = ref([
     {
         children: [
             {
-                img: getImgUrl('home.png'),
-                imgSelected: getImgUrl('home-selected.png'),
+                img: getIconUrl('home.png'),
+                imgSelected: getIconUrl('home-selected.png'),
                 routeName: 'home',
                 name: '首页'
             },
             {
-                img: getImgUrl('store.png'),
-                imgSelected: getImgUrl('store-selected.png'),
+                img: getIconUrl('store.png'),
+                imgSelected: getIconUrl('store-selected.png'),
                 routeName: 'store',
                 name: '商店'
             },
@@ -129,14 +141,14 @@ const directory = ref([
         node: '节点1',
         children: [
             {
-                img: getImgUrl('account.png'),
-                imgSelected: getImgUrl('account-selected.png'),
+                img: getIconUrl('account.png'),
+                imgSelected: getIconUrl('account-selected.png'),
                 routeName: 'account',
                 name: '我的账号'
             },
             {
-                img: getImgUrl('wallet.png'),
-                imgSelected: getImgUrl('wallet-selected.png'),
+                img: getIconUrl('wallet.png'),
+                imgSelected: getIconUrl('wallet-selected.png'),
                 routeName: '钱包',
                 name: 'wallet'
             },
@@ -146,22 +158,35 @@ const directory = ref([
         node: '节点2',
         children: [
             {
-                img: getImgUrl('tutorial.png'),
-                imgSelected: getImgUrl('tutorial-selected.png'),
+                img: getIconUrl('tutorial.png'),
+                imgSelected: getIconUrl('tutorial-selected.png'),
                 routeName: 'tutorial',
                 name: '教程'
             },
             {
-                img: getImgUrl('problem.png'),
-                imgSelected: getImgUrl('problem-selected.png'),
+                img: getIconUrl('problem.png'),
+                imgSelected: getIconUrl('problem-selected.png'),
                 routeName: 'problem',
                 name: '常见问题'
             },
         ]
     },
     {
-        node: '节点3',
-        children: []
+        node: '后台管理',
+        children: [
+            {
+                img: getIconUrl('manageGoods.png'),
+                imgSelected: getIconUrl('manageGoods-selected.png'),
+                routeName: 'manageDicts',
+                name: '字典管理'
+            },
+            {
+                img: getIconUrl('manageGoods.png'),
+                imgSelected: getIconUrl('manageGoods-selected.png'),
+                routeName: 'manageGoods',
+                name: '商品管理'
+            },
+        ]
     },
 ]);
 
@@ -187,11 +212,35 @@ const el_main = ref(null)
 const el_navbar = ref(null)
 const root = document.documentElement;
 const root_asideWidth = getComputedStyle(root).getPropertyValue('--aside-width');
+const root_asideWidthSimplify = getComputedStyle(root).getPropertyValue('--aside-width-simplify');
 
 const $theme = inject('$theme')
+
+
+//theme
+const isDark = ref(false)
+const toggleTheme = () => {
+    let currentTheme = root.getAttribute('data-theme');
+    currentTheme = currentTheme ? currentTheme : 'light'
+    if (currentTheme == 'dark') {
+
+        root.setAttribute('data-theme', 'light')
+        $theme.value = 'light'
+    } else if (currentTheme == 'light') {
+
+        root.setAttribute('data-theme', 'dark')
+        $theme.value = 'dark'
+
+    }
+    isDark.value = currentTheme == 'light' ? true : false
+    console.log(111, root.getAttribute('data-theme'));
+}
+
+
 //listen $size
 const $size = inject('$size')
-const setRootProperty_header = (value) => {
+let isAsideMaskShow = ref(false)
+const setRootProperty_header_sub = (value) => {
     root.style.setProperty('--header-sub', value);
 }
 watch($size, (newVal, oldVal) => {
@@ -199,30 +248,43 @@ watch($size, (newVal, oldVal) => {
         console.log('变大');
 
         el_main.value.classList.remove('showaside')
-        setRootProperty_header(root_asideWidth)
-
+        setRootProperty_header_sub(root_asideWidth)
+        isAsideMaskShow.value = false
     }
-    if (newVal < 5) {
+    if (oldVal === 5 && newVal < 5) {
         console.log('变小');
 
-        setRootProperty_header('0rem')
+        setRootProperty_header_sub('0rem')
+        isAsideMaskShow.value = false
     }
     ischecked.value = true
     el_main.value.classList.remove('simplifyaside')
-
 })
-
+const hideAsideMask = () => {
+    isAsideMaskShow.value = false
+    asideToggle()
+}
 
 //aside-simplify
 let ischecked = ref(true)
 const asideChcek = () => {
     el_main.value.classList.toggle('simplifyaside')
     ischecked.value = !ischecked.value
+    if (ischecked.value) {
+        setRootProperty_header_sub(root_asideWidth)
+    } else {
+        setRootProperty_header_sub(root_asideWidthSimplify)
+    }
 }
 //aside-show/hide
 const asideToggle = () => {
     if ($size.value < 5) {
         el_main.value.classList.toggle('showaside')
+        if (el_main.value.classList.contains('showaside')) {
+            isAsideMaskShow.value = true
+        } else {
+            isAsideMaskShow.value = false
+        }
     }
 }
 //navigation
@@ -248,26 +310,45 @@ const dropdownHandler = (id) => {
     }
 }
 
+//initialize data
+const initData = () => {
+    getUserInfo();
+}
+const userInfo = ref({
+    user_id: null,
+    user_name: '',
+    user_email: ''
+});
+const getUserInfo = () => {
+    const a = JSON.parse(getCookie('userInfo'))
+    if (a) {
+        userInfo.value = a
+    }
+    userInfo.value.avatar = ('qq' === userInfo.value.user_email?.split('@')[1]?.split('.')[0]) ? `https://q4.qlogo.cn/g?b=qq&nk=${userInfo.value.user_email}&s=3` : getImgUrl('avatar.png')
+
+}
 
 onMounted(() => {
     if ($size.value < 5) {
-        setRootProperty_header('0rem')
+        setRootProperty_header_sub('0rem')
     }
     const arr = route.path.split('/')
     activeRoute.value = arr[arr.length - 1]
-
+    initData();
 })
 </script>
 
 <style lang="scss" scoped>
+// z-index: aside > aside-mask > navbar > navbar-mask > content
 $aside-width: var(--aside-width);
-$aside--item-width: 12rem;
+$aside-item-width: 12rem;
 $aside-width-simplify: var(--aside-width-simplify);
 
-//小于1200时
+
+//小于等于1200时
 @media (max-width: 1200px) {
     .aside {
-        transform: translateX(-16rem);
+        transform: translateX(calc(-1 * var(--aside-width)));
         opacity: 0;
     }
 
@@ -277,8 +358,12 @@ $aside-width-simplify: var(--aside-width-simplify);
 
 }
 
-//大于1200时
+//大于等于1200时
 @media (min-width: 1200px) {
+    .aside {
+        transform: translateX(0);
+        opacity: 1;
+    }
 
     .aside-placehoder {
         width: $aside-width;
@@ -299,7 +384,7 @@ $aside-width-simplify: var(--aside-width-simplify);
         box-sizing: border-box;
         height: 100vh;
         width: $aside-width;
-        z-index: 999;
+        z-index: 4;
         transition: $transition;
         overflow-y: scroll;
         overflow-x: hidden;
@@ -347,12 +432,25 @@ $aside-width-simplify: var(--aside-width-simplify);
                 }
             }
         }
+
+        .theme-switch {
+            position: absolute;
+            right: $padding;
+            bottom: $padding;
+        }
     }
 
     .aside-item>p {
         font-size: $font-size-1;
         font-weight: $font-weight-regular;
 
+    }
+
+    .aside-mask {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        z-index: 3;
     }
 }
 
@@ -376,7 +474,7 @@ $aside-width-simplify: var(--aside-width-simplify);
     padding: .3rem 1rem;
     margin: .2rem 0;
     height: 2em;
-    width: $aside--item-width; //固定宽度，防止行内元素变动（width=$aside-width-4rem
+    // width: $aside-item-width; //固定宽度，防止行内元素变动（width=$aside-width-4rem
     cursor: pointer;
 
     img {
@@ -410,7 +508,7 @@ $aside-width-simplify: var(--aside-width-simplify);
     box-sizing: border-box;
     padding: $padding-regular;
     height: 4rem;
-    z-index: 998;
+    z-index: 2;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -447,20 +545,26 @@ $aside-width-simplify: var(--aside-width-simplify);
             color: var(--theme-color-text-gray);
         }
 
-        .profile {
+        .avatar {
             margin-left: .5rem;
-            width: 2.8rem;
             margin-right: .5rem;
+
+            img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                box-shadow: 0 4px 8px 0 #0000001d;
+            }
         }
     }
 }
 
-.mask {
+.navbar-mask {
     position: fixed;
     right: 0;
     width: calc(100% - var(--header-sub));
     height: 5rem;
-    z-index: 997;
+    z-index: 1;
     background-color: var(--theme-color-background);
     opacity: .9;
     transition: $transition-background-color;
@@ -480,6 +584,7 @@ $aside-width-simplify: var(--aside-width-simplify);
     margin-top: 5rem;
     min-height: calc(100vh - 5rem);
     z-index: 0;
+    overflow-x: hidden;
 }
 
 
@@ -492,7 +597,6 @@ $aside-width-simplify: var(--aside-width-simplify);
         opacity: 1;
     }
 
-    // --header-sub:#{$aside-width};
 
 }
 
@@ -509,6 +613,10 @@ $aside-width-simplify: var(--aside-width-simplify);
 
         }
 
+        .theme-switch {
+            visibility: hidden;
+        }
+
         &:hover {
             width: $aside-width;
 
@@ -520,10 +628,15 @@ $aside-width-simplify: var(--aside-width-simplify);
                 visibility: visible;
             }
 
+            .theme-switch {
+                visibility: visible;
+
+            }
+
         }
 
         &:hover .aside-item {
-            width: $aside--item-width;
+            width: $aside-item-width;
 
         }
 
@@ -537,7 +650,6 @@ $aside-width-simplify: var(--aside-width-simplify);
         width: $aside-width-simplify;
     }
 
-    --header-sub:#{$aside-width-simplify};
 }
 
 .aside-item-checked {

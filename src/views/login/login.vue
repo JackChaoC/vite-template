@@ -40,14 +40,10 @@ const postLogin = async () => {
             user_password: data.user.password
         });
         console.log(res);
-        if (res.code == 0) {
-            ElMessage.warning(`${res.message}`)
-        } else {
-            router.push({
-                name: 'home'
-            });
-            ElMessage.success('登陆成功')
-        }
+        router.push({
+            name: 'home'
+        });
+        ElMessage.success('登陆成功')
     } catch (err) {
         console.log(err);
     }

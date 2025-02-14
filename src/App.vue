@@ -1,25 +1,22 @@
 <template>
     <router-view></router-view>
-    <el-switch v-model="toDark" class="mt-2 theme-switch" inline-prompt :active-icon="Sunny" :inactive-icon="Moon"
-        @change="themeToggle" />
 </template>
 <script setup>
-import { computed, onMounted, provide, reactive, ref } from 'vue'
-import { Moon,Sunny } from '@element-plus/icons-vue'
+import { onMounted, provide, ref } from 'vue'
 
 const root = document.documentElement;
 const $size = ref('');
 const $theme = ref('light');
+const $baseUrl = ref(import.meta.env.MODE='development'?'http://localhost:3000':import.meta.env.VITE_BASE_URL);//仅限于标签上使用URL
 provide('$size', $size);
 provide('$theme', $theme);
+provide('$baseUrl', $baseUrl);
 onMounted(() => {
     root.setAttribute('data-theme', 'light')
     calWindowWidth()
     window.addEventListener('resize', () => {
         calWindowWidth()
     })
-
-
 })
 var calWindowWidth = () => {
     const width = window.innerWidth;
@@ -36,23 +33,6 @@ var calWindowWidth = () => {
     }
     console.log('$size:', $size.value);
 }
-let toDark = ref('')
-const themeToggle = () => {
-    const currentTheme = root.getAttribute('data-theme');
-    if (!currentTheme || currentTheme == 'dark') {
-        root.setAttribute('data-theme', 'light')
-        $theme.value = 'light'
-    } else if (currentTheme == 'light') {
-        root.setAttribute('data-theme', 'dark')
-        $theme.value = 'dark'
-
-    }
-    toDark = !toDark
-    console.log(111, root.getAttribute('data-theme'));
-}
-onMounted(() => {
-    toDark.value = $theme && $theme == 'light' ? true : false;
-})
 </script>
 
 <style lang="scss">
@@ -65,7 +45,7 @@ onMounted(() => {
 html {
 
     &::-webkit-scrollbar {
-        width: 6px;
+        width: 6px ;
     }
 
     &::-webkit-scrollbar-thumb {
@@ -80,21 +60,24 @@ body {
     transition: $transition-background-color;
     touch-action: manipulation;
 }
-img{
+
+img {
     user-select: none;
 }
 
-[data-theme='light'] .theme-switch{
-    svg{
-        color:#3b10da;
+[data-theme='light'] .theme-switch {
+    svg {
+        color: #3b10da;
     }
 }
-[data-theme='dark'] .theme-switch{
-    svg{
+
+[data-theme='dark'] .theme-switch {
+    svg {
         color: rgb(255, 253, 148);
     }
 }
-.theme-switch{
+
+.theme-switch1 {
     position: fixed;
     bottom: 10px;
     right: 2.2rem;

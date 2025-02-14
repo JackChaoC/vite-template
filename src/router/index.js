@@ -11,7 +11,7 @@ const routes = [
     {
         path: '/',
         redirect: {
-            name: 'home'
+            name: 'main'
         }
     },
     {
@@ -44,6 +44,16 @@ const routes = [
                 name: 'account',
                 component: () => import('@/views/main/account/account.vue'),
             },
+            {
+                path: 'manageDicts',
+                name: 'manageDicts',
+                component: () => import('@/views/main/manageDicts/manageDicts.vue'),
+            },
+            {
+                path: 'manageGoods',
+                name: 'manageGoods',
+                component: () => import('@/views/main/mangeGoods/manageGoods.vue'),
+            }
         ]
     },
 
