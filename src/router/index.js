@@ -45,6 +45,21 @@ const routes = [
                 component: () => import('@/views/main/account/account.vue'),
             },
             {
+                path: 'wallet',
+                name: 'wallet',
+                component: () => import('@/views/main/wallet/wallet.vue'),
+            },
+            {
+                path: 'tutorial',
+                name: 'tutorial',
+                component: () => import('@/views/main/tutorial/tutorial.vue'),
+            },
+            {
+                path: 'problem',
+                name: 'problem',
+                component: () => import('@/views/main/problem/problem.vue'),
+            },
+            {
                 path: 'manageDicts',
                 name: 'manageDicts',
                 component: () => import('@/views/main/manageDicts/manageDicts.vue'),

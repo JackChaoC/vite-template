@@ -3,7 +3,7 @@
         <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
             <el-tab-pane label="List" name="list">List</el-tab-pane>
             <el-tab-pane label="Add" name="add" class="add">
-                <div class="form">
+                <el-form :model="editFormData" label-width="auto">
                     <div class="flex form-item">
                         <label>图片</label>
                         <el-upload class="avatar-uploader" :action="`${$baseUrl}/upload`" :show-file-list="false"
@@ -14,20 +14,20 @@
                             </el-icon>
                         </el-upload>
                     </div>
-                    <div class="flex form-item">
+                    <div class="form-item">
                         <label>名称</label>
                         <input type="text" class="input">
                     </div>
-                    <div class="flex form-item">
+                    <div class="form-item">
                         <label>价格</label>
                         <input type="text" class="input">
                     </div>
-                    <div class="flex form-item">
+                    <div class="form-item">
                         <label>库存</label>
                         <input type="text" class="input">
                     </div>
                     <button class="btn submit" @click="showFileList">submit</button>
-                </div>
+                </el-form>
             </el-tab-pane>
 
         </el-tabs>
@@ -67,56 +67,33 @@ const handleAvatarSuccess = (res, uploadFile) => {
     padding: 1rem 2rem;
 
 }
-.add {
-    display: flex;
-    justify-content: center;
 
-    .form {
-        font-size: $font-size-2;
-        color: var(--theme-color-text);
-        margin-top: 5px;
-        display: flex;
-        flex-direction: column;
+.add {}
 
-        .avatar-uploader,
-        img,
-        .avatar-uploader-icon {
-            height: 100px;
-            width: 100px;
+.avatar-uploader {
+
+    img,
+    .avatar-uploader-icon {
+        height: 100px;
+        width: 100px;
+    }
+
+    img {
+        object-fit: contain;
+        border: 1px dashed var(--color-border-gray);
+
+        &:hover {
+            border-color: $color-primary;
         }
+    }
 
-        img {
-            object-fit: contain;
-            border: 1px dashed var(--color-border-gray);
+    .avatar-uploader-icon {
+        font-size: 20px;
+        border: 1px dashed var(--color-border-gray);
+        border-radius: 3px;
 
-            &:hover {
-                border-color: $color-primary;
-            }
-        }
-
-        .avatar-uploader-icon {
-            font-size: 20px;
-            border: 1px dashed var(--color-border-gray);
-            border-radius: 3px;
-
-            &:hover {
-                border-color: $color-primary;
-            }
-        }
-
-        .form-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: inline-block;
-            width: 4em;
-        }
-
-        .submit {
-            align-self: center;
+        &:hover {
+            border-color: $color-primary;
         }
     }
 }

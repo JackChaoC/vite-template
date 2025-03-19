@@ -7,7 +7,7 @@ import { onMounted, provide, ref } from 'vue'
 const root = document.documentElement;
 const $size = ref('');
 const $theme = ref('light');
-const $baseUrl = ref(import.meta.env.MODE='development'?'http://localhost:3000':import.meta.env.VITE_BASE_URL);//仅限于标签上使用URL
+const $baseUrl = ref(import.meta.env.MODE==='development'?'http://localhost:3000':import.meta.env.VITE_BASE_URL);//仅限于标签上使用URL
 provide('$size', $size);
 provide('$theme', $theme);
 provide('$baseUrl', $baseUrl);

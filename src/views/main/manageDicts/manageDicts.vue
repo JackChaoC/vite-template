@@ -60,11 +60,10 @@
         <el-form :model="sonDetail" label-width="auto">
 
             <div>
-                <el-button type="primary"
-                    @click="() => sonDetail.mode == 'add' ? addDictsCategory() : updateCategory()">{{
-                        sonDetail.mode
-                            ==
-                            'add' ? '添加' : '保存' }}</el-button>
+                <el-button type="primary" @click="() => sonDetail.mode == 'add' ? addDictsCategory() : rowSonEdit()">{{
+                    sonDetail.mode
+                        ==
+                        'add' ? '添加' : '保存' }}</el-button>
             </div>
             <el-form-item label="id">
                 <el-input v-model="sonDetail.data.category_id" placeholder="id" clearable style="width: 240px"
@@ -117,7 +116,7 @@ const tabClick = () => {
 }
 const getDicts = async () => {
     try {
-        const result = await request.get(`/management/getDicts`, {
+        const result = await request.post(`/management/getDicts`, {
             dicts_name: addFormData.dicts_name
         })
         dictsList.value = result
@@ -136,7 +135,7 @@ const rowEdit = (row) => {
 const rowDelete = async (id) => {
     try {
         const result = await request.post(`/management/deleteDicts`, {
-            dicts_id: id
+            id: id
         });
         ElMessage.success('删除成功')
         getDicts()
@@ -147,23 +146,23 @@ const rowDelete = async (id) => {
 }
 
 //二级-表单-列表
-const dictsCategoryList = ref([])
-const dialogVisible = ref(false)
 const editFormData = ref({
     dicts_id: '',
     dicts_name: '',
     dicts_category: []
 })
+const dictsCategoryList = ref([])
+const dialogVisible = ref(false)
 const getDictsDetails = async () => {
-    const result = await request.post(`/management/getDictsDetail`, {
-        dicts_id: editFormData.value.dicts_id
+    const result = await request.post(`/management/getDicts`, {
+        id: editFormData.value.dicts_id
     })
     editFormData.value.dicts_name = result.dicts_name
 }
 const getDictsCategory = async () => {
     try {
         const result = await request.post(`/management/getDictsCategory`, {
-            dicts_id: editFormData.value.dicts_id
+            fk: editFormData.value.dicts_id
         })
         dictsCategoryList.value = result
         console.log(dictsCategoryList.value);
@@ -178,7 +177,7 @@ const updateDicts = async () => {
 
     try {
         const result = await request.post(`/management/updateDicts`, {
-            dicts_id: editFormData.value.dicts_id,
+            id: editFormData.value.dicts_id,
             dicts_name: editFormData.value.dicts_name
         })
         ElMessage.success('修改成功')
@@ -198,17 +197,13 @@ const sonOpenAddForm = () => {
 const sonOpenEditForm = async (id) => {
     dialogVisibleAddSon.value = true
     sonDetail.value.mode = 'edit'
-    sonDetail.value.data.category_id = id
-    const result = await request.post('/management/getCategoryDetail', {
-        dicts_id: id
-    })
-    sonDetail.value.data.category_name = result.category_name
+    getCategoryDetails(id)
 }
 
 const sonDelete = async (id) => {
     try {
-        const result = await request.post(`/management/deleteCategory`, {
-            category_id: id
+        const result = await request.post(`/management/deleteDictsCategory`, {
+            id: id
         });
         ElMessage.success('删除成功')
         getDictsCategory()
@@ -231,7 +226,7 @@ const sonDetail = ref({
 const addDictsCategory = async () => {
     try {
         const result = await request.post(`/management/addDictsCategory`, {
-            dicts_id: editFormData.value.dicts_id,
+            fk: editFormData.value.dicts_id,
             category_name: sonDetail.value.data.category_name
         })
         getDictsCategory()
@@ -242,13 +237,33 @@ const addDictsCategory = async () => {
         ElMessage.success('添加成功')
     } catch (error) {
     }
+}
+const getCategoryDetails = async (id) => {
+    try {
+        const result = await request.post(`/management/getDictsCategory`, {
+            id: id
+        })
+        sonDetail.value.data.category_id = id
+        sonDetail.value.data.category_name = result.category_name
+    } catch (error) {
+
+    }
 
 }
-const rowSonEdit = async (id) => {
-    // const result = await request.post('/management/getCategoryDetail', {
-    //     category_id: id
-    // })
-    // sonDetail.value.data.dicts_name = result.category_name
+const rowSonEdit = async () => {
+    try {
+        const result = await request.post('/management/updateDictsCategory', {
+            id: sonDetail.value.data.category_id,
+            category_name: sonDetail.value.data.category_name
+        })
+        getDictsCategory()
+        dialogVisibleAddSon.value = false
+        ElMessage.success('修改成功')
+
+    } catch (error) {
+
+    }
+
 }
 
 

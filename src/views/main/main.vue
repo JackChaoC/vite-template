@@ -149,8 +149,8 @@ const directory = ref([
             {
                 img: getIconUrl('wallet.png'),
                 imgSelected: getIconUrl('wallet-selected.png'),
-                routeName: '钱包',
-                name: 'wallet'
+                routeName: 'wallet',
+                name: '钱包'
             },
         ]
     },
