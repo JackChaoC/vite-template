@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHashHistory, createWebHistory } from "vue-router";
 
 import login from '@/views/login/login.vue'
 import register from '@/views/register/register.vue'
@@ -74,7 +74,8 @@ const routes = [
 
 ]
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory('/vitecli/'),
+    // history: createWebHashHistory()
     routes
 })
 export default router

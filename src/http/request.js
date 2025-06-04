@@ -15,10 +15,9 @@ const service = axios.create({
 // 2.请求拦截器
 service.interceptors.request.use(config => {
     // console.log('响应拦截器config->', config);
-    const token = getCookie('名称');
+    const token = getCookie('token');
     if (token) {
-        config.params = { 'token': token }
-        config.headers.token = token;
+        config.headers.authorization = token;
     }
 
     return config

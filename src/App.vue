@@ -45,7 +45,7 @@ var calWindowWidth = () => {
 html {
 
     &::-webkit-scrollbar {
-        width: 6px ;
+        width: 6px;
     }
 
     &::-webkit-scrollbar-thumb {

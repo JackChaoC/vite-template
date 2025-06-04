@@ -320,9 +320,9 @@ const userInfo = ref({
     user_email: ''
 });
 const getUserInfo = () => {
-    const a = JSON.parse(getCookie('userInfo'))
-    if (a) {
-        userInfo.value = a
+    const token = getCookie('token');
+    if (token) {
+        userInfo.value = JSON.parse(atob(token.split('.')[1]))
     }
     userInfo.value.avatar = ('qq' === userInfo.value.user_email?.split('@')[1]?.split('.')[0]) ? `https://q4.qlogo.cn/g?b=qq&nk=${userInfo.value.user_email}&s=3` : getImgUrl('avatar.png')
 
