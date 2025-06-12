@@ -39,6 +39,7 @@ import { inject, ref } from 'vue';
 import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus';
 
+const editFormData = ref({})
 let $baseUrl = inject('$baseUrl');
 
 const activeName = ref('add')

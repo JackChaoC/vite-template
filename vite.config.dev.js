@@ -16,11 +16,11 @@ export default defineConfig({
             resolvers: [ElementPlusResolver()],
         }),],
     server: {
-        hmr: {
-            // 自定义 HMR 选项，例如：
-            protocol: 'ws',
-            port: 3001
-        },
+        // hmr: {
+        //     // 自定义 HMR 选项，例如：
+        //     protocol: 'ws',
+        //     port: 3001
+        // },
         proxy: {
             // 在此处编写代理规则
             '/api': {
